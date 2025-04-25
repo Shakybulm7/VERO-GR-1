@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Learn Colors in English</title>
+  <style>
+    body {
+      font-family: Comic Sans MS, sans-serif;
+      background: linear-gradient(to bottom right, #fceabb, #f8b500);
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      color: #333;
+    }
+    h1 {
+      color: #ffffff;
+      background-color: #ff6f61;
+      padding: 20px;
+      margin: 0;
+    }
+    .color-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px;
+    }
+    .color-btn {
+      width: 120px;
+      height: 120px;
+      margin: 10px;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .color-btn:hover {
+      transform: scale(1.1);
+    }
+    .game-section {
+      margin-top: 40px;
+    }
+    .question {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .score {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Learn Colors in English 🎨</h1>
+
+  <h2>Click the buttons to learn colors</h2>
+  <div class="color-buttons" id="colorButtons"></div>
+
+  <div class="game-section">
+    <h2>🎮 Game: Find the Color!</h2>
+    <div class="question" id="questionText">Click the correct color: </div>
+    <div class="color-buttons" id="gameButtons"></div>
+    <div class="score" id="scoreText">Score: 0</div>
+  </div>
+
+  <script>
+    const colors = [
+      { name: "Red", color: "#e74c3c" },
+      { name: "Blue", color: "#3498db" },
+      { name: "Yellow", color: "#f1c40f" },
+      { name: "Green", color: "#2ecc71" },
+      { name: "Purple", color: "#9b59b6" },
+      { name: "Orange", color: "#e67e22" },
+      { name: "Pink", color: "#fd79a8" },
+      { name: "Brown", color: "#8e44ad" },
+      { name: "Black", color: "#2d3436" },
+      { name: "White", color: "#ecf0f1", textColor: "#333" }
+    ];
+
+    const colorButtonsDiv = document.getElementById("colorButtons");
+    const gameButtonsDiv = document.getElementById("gameButtons");
+    const questionText = document.getElementById("questionText");
+    const scoreText = document.getElementById("scoreText");
+    let currentColor = null;
+    let score = 0;
+
+    // Create learning buttons
+    colors.forEach(c => {
+      const btn = document.createElement("button");
+      btn.className = "color-btn";
+      btn.style.backgroundColor = c.color;
+      btn.style.color = c.textColor || "#fff";
+      btn.innerText = c.name;
+      btn.onclick = () => {
+        const utter = new SpeechSynthesisUtterance(c.name);
+        utter.lang = "en-US";
+        speechSynthesis.speak(utter);
+      };
+      colorButtonsDiv.appendChild(btn);
+    });
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function nextQuestion() {
+      gameButtonsDiv.innerHTML = "";
+      const options = shuffle(colors).slice(0, 4);
+      currentColor = options[Math.floor(Math.random() * options.length)];
+      questionText.textContent = `Click the correct color: ${currentColor.name}`;
+      options.forEach(c => {
+        const btn = document.createElement("button");
+        btn.className = "color-btn";
+        btn.style.backgroundColor = c.color;
+        btn.style.color = c.textColor || "#fff";
+        btn.onclick = () => {
+          if (c.name === currentColor.name) {
+            score++;
+            alert("Correct! 🎉");
+          } else {
+            alert("Oops! Try again 😅");
+          }
+          scoreText.textContent = `Score: ${score}`;
+          nextQuestion();
+        };
+        gameButtonsDiv.appendChild(btn);
+      });
+    }
+
+    nextQuestion();
+  </script>
+
+</body>
+</html>
